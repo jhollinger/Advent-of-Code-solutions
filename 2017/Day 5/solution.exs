@@ -2,12 +2,12 @@ defmodule Instructions do
   @part System.argv |> Enum.at(0) |> String.to_atom
 
   def step(instructions, jump_to \\ 0, total_steps \\ 0)
-  def step(instructions, jump_to, total_steps) when jump_to >= length(instructions), do: total_steps
+  def step(instructions, jump_to, total_steps) when jump_to >= map_size(instructions), do: total_steps
   def step(instructions, jump_to, total_steps) do
-    instruction = Enum.at(instructions, jump_to)
+    instruction = instructions[jump_to]
     next_jump = jump_to + instruction
     instructions
-    |> List.replace_at(jump_to, instruction + incr(@part, instruction))
+    |> Map.put(jump_to, instruction + incr(@part, instruction))
     |> step(next_jump, total_steps + 1)
   end
 
@@ -20,7 +20,10 @@ defmodule Instructions do
     |> IO.read(:all)
     |> String.trim
     |> String.split(~r/\s+/)
-    |> Enum.map(&(String.to_integer &1))
+    |> Enum.with_index
+    |> Enum.reduce(%{}, fn({n, idx}, a) ->
+      Map.put(a, idx, String.to_integer(n))
+    end)
   end
 end
 
