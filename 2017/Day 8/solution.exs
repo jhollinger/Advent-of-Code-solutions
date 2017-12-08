@@ -52,8 +52,9 @@ defmodule Reg do
   end
 
   def parse(lines) do
-    Enum.map lines, fn(line) ->
-      x = ~r/^([a-z]+) ([a-z]+) (-?[0-9]+) if ([a-z]+) ([^0-9\s]+) (-?[0-9]+)$/ |> Regex.run(line)
+    pattern = ~r/^([a-z]+) ([a-z]+) (-?[0-9]+) if ([a-z]+) ([^0-9\s]+) (-?[0-9]+)$/
+    Stream.map lines, fn(line) ->
+      x = pattern |> Regex.run(line)
       %Reg.Instruction{
         reg: x |> Enum.at(1),
         op: x |> Enum.at(2),
@@ -66,18 +67,11 @@ defmodule Reg do
       }
     end
   end
-
-  def read_input(io) do
-    io
-    |> IO.read(:all)
-    |> String.trim
-    |> String.split(~r/\n/)
-  end
 end
 
 part = System.argv |> Enum.at(0) |> String.to_atom
 :stdio
-|> Reg.read_input
+|> IO.stream(:line)
 |> Reg.parse
 |> Reg.run(part)
 |> IO.inspect
