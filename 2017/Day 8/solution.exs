@@ -23,42 +23,32 @@ defmodule Reg do
     |> elem(1)
   end
 
-  defp execute(registers, %Reg.Instruction{} = i) do
-    if registers |> eval_cond(i.cond) do
-      new_val = registers |> eval_op(i)
+  defp execute(registers, %Reg.Instruction{cond: {cond_reg, comp, cond_val}} = i) do
+    if comp |> compare(registers[cond_reg] || 0, cond_val) do
+      new_val = i.op |> op(registers[i.reg] || 0, i.amount)
       registers |> Map.put(i.reg, new_val)
     else
       registers
     end
   end
 
-  defp eval_op(registers, %Reg.Instruction{reg: reg, op: op, amount: n}) do
-    current_val = registers[reg] || 0
-    case op do
-      "inc" -> current_val + n
-      "dec" -> current_val - n
-    end
-  end
+  defp op(:inc, val, n), do: val + n
+  defp op(:dec, val, n), do: val - n
 
-  defp eval_cond(registers, {reg, comp, asserted_val}) do
-    reg_val = registers[reg] || 0
-    case comp do
-      ">" -> reg_val > asserted_val
-      "<" -> reg_val < asserted_val
-      ">=" -> reg_val >= asserted_val
-      "<=" -> reg_val <= asserted_val
-      "==" -> reg_val == asserted_val
-      "!=" -> reg_val != asserted_val
-    end
-  end
+  defp compare(:>, a, b), do: a > b
+  defp compare(:<, a, b), do: a < b
+  defp compare(:>=, a, b), do: a >= b
+  defp compare(:<=, a, b), do: a <= b
+  defp compare(:==, a, b), do: a == b
+  defp compare(:"!=", a, b), do: a != b
 
   def parse(lines) do
     pattern = ~r/^([a-z]+) ([a-z]+) (-?[0-9]+) if ([a-z]+) ([^0-9\s]+) (-?[0-9]+)$/
     Stream.map lines, fn(line) ->
       [_, reg, op, amount, cond_reg, cond_comp, cond_val] = pattern |> Regex.run(line)
-      %Reg.Instruction{reg: reg, op: op, amount: amount |> String.to_integer, cond: {
+      %Reg.Instruction{reg: reg, op: op |> String.to_atom, amount: amount |> String.to_integer, cond: {
         cond_reg,
-        cond_comp,
+        cond_comp |> String.to_atom,
         cond_val |> String.to_integer
       }}
     end
