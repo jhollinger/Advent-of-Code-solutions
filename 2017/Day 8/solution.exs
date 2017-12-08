@@ -14,16 +14,17 @@ defmodule Reg do
   end
 
   def run(instructions, :b) do
-    {_, val} = Enum.reduce instructions, {%{}, 0}, fn(ins, {reg, highest}) ->
+    instructions
+    |> Enum.reduce({%{}, 0}, fn(ins, {reg, highest}) ->
       new_reg = reg |> execute(ins)
-      new_val = reg[ins.reg] || 0
+      new_val = new_reg[ins.reg] || 0
       {new_reg, (if new_val > highest, do: new_val, else: highest)}
-    end
-    val
+    end)
+    |> elem(1)
   end
 
   defp execute(registers, %Reg.Instruction{} = i) do
-    if eval_cond(registers, i.cond) do
+    if registers |> eval_cond(i.cond) do
       new_val = registers |> eval_op(i)
       registers |> Map.put(i.reg, new_val)
     else
