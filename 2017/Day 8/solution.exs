@@ -55,17 +55,12 @@ defmodule Reg do
   def parse(lines) do
     pattern = ~r/^([a-z]+) ([a-z]+) (-?[0-9]+) if ([a-z]+) ([^0-9\s]+) (-?[0-9]+)$/
     Stream.map lines, fn(line) ->
-      x = pattern |> Regex.run(line)
-      %Reg.Instruction{
-        reg: x |> Enum.at(1),
-        op: x |> Enum.at(2),
-        amount: x |> Enum.at(3) |> String.to_integer,
-        cond: {
-          x |> Enum.at(4),
-          x |> Enum.at(5),
-          x |> Enum.at(6) |> String.to_integer
-        }
-      }
+      [_, reg, op, amount, cond_reg, cond_comp, cond_val] = pattern |> Regex.run(line)
+      %Reg.Instruction{reg: reg, op: op, amount: amount |> String.to_integer, cond: {
+        cond_reg,
+        cond_comp,
+        cond_val |> String.to_integer
+      }}
     end
   end
 end
