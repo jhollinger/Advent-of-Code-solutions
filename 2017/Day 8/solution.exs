@@ -8,8 +8,7 @@ defmodule Reg do
       reg |> execute(ins) |> elem(0)
     end)
     |> Map.values
-    |> Enum.sort
-    |> Enum.at(-1)
+    |> Enum.max
   end
 
   def run(instructions, :b) do
