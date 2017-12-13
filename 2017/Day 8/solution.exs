@@ -15,7 +15,7 @@ defmodule Reg do
     instructions
     |> Enum.reduce({%{}, 0}, fn(ins, {reg, highest}) ->
       {new_reg, val} = reg |> execute(ins)
-      {new_reg, (if val > highest, do: val, else: highest)}
+      {new_reg, max(val, highest)}
     end)
     |> elem(1)
   end
