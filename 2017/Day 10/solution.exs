@@ -9,7 +9,7 @@ defmodule Day10 do
   end
 
   def run(input, :b) do
-    input |> String.to_charlist |> KnotHash.hash
+    input |> KnotHash.hash
   end
 end
 
@@ -21,7 +21,8 @@ defmodule KnotHash do
   @suffix [17, 31, 73, 47, 23]
 
   def hash(input) do
-    raw = @slots |> rounds(input ++ @suffix, @rounds)
+    chars = input |> String.to_charlist
+    raw = @slots |> rounds(chars ++ @suffix, @rounds)
     sparse_hash = 0..@size-1 |> Enum.map(&(raw[&1]))
     dense_hash = sparse_hash |> Enum.chunk(16) |> Enum.reduce(<<>>, fn(chunk, a) ->
       bit = chunk |> Enum.reduce(fn(n, a) -> a ^^^ n end)
