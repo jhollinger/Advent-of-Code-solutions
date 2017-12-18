@@ -16,14 +16,26 @@ defmodule Threads do
       threads |> Enum.all?(fn t -> t.state == :dead or t.state == :blocked end) ->
         threads
       true ->
-        threads2 = threads |> Enum.map(fn
+        threads
+        |> Enum.map(fn
           %T{state: :dead} = t -> t
           %T{} = t -> t |> step(instructions)
         end)
-
-        threads2
         |> deliver_messages
         |> execute(instructions)
+    end
+  end
+
+  def step(%T{pos: pos} = thread, _instructions) when pos < 0, do: %{thread | state: :dead}
+  def step(%T{pos: pos} = thread, instructions) when pos >= map_size(instructions), do: %{thread | state: :dead}
+  def step(%T{} = thread, instructions) do
+    case instructions[thread.pos] |> exec(thread) do
+      {:jump, m} ->
+        %{thread | pos: thread.pos + m}
+      %T{state: :blocked} = t ->
+        t
+      %T{} = t ->
+        %{t | pos: t.pos + 1}
     end
   end
 
@@ -38,19 +50,6 @@ defmodule Threads do
     all_threads
     |> Enum.reject(fn ot -> ot.id == t.id end)
     |> Enum.flat_map(fn ot -> ot.out_buf end)
-  end
-
-  def step(%T{pos: pos} = thread, _instructions) when pos < 0, do: %{thread | state: :dead}
-  def step(%T{pos: pos} = thread, instructions) when pos >= map_size(instructions), do: %{thread | state: :dead}
-  def step(%T{} = thread, instructions) do
-    case instructions[thread.pos] |> exec(thread) do
-      {:jump, m} ->
-        %{thread | pos: thread.pos + m}
-      %T{state: :blocked} = t ->
-        t
-      %T{} = t ->
-        %{t | pos: t.pos + 1}
-    end
   end
 
   defp exec({:snd, reg}, %T{} = thread) when is_atom(reg) do
