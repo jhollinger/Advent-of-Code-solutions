@@ -6,22 +6,20 @@ defmodule Threads do
   end
 
   def run(instructions, concurrency) do
-    threads = 1..concurrency |> Enum.map(fn id -> T.new(id-1) end)
+    threads = 0..concurrency-1 |> Enum.map(fn id -> T.new(id) end)
     t1 = threads |> execute(instructions) |> Enum.find(fn %T{id: id} -> id == 1 end)
     t1.write_cnt
   end
 
   def execute(threads, instructions) do
     cond do
-      threads |> Enum.all?(fn t -> t.state != :running end) ->
+      threads |> Enum.all?(fn t -> t.state == :dead or t.state == :blocked end) ->
         threads
       true ->
-        threads2 =
-          threads
-          |> Enum.map(fn
-            %T{state: :dead} = t -> t
-            %T{} = t -> t |> step(instructions)
-          end)
+        threads2 = threads |> Enum.map(fn
+          %T{state: :dead} = t -> t
+          %T{} = t -> t |> step(instructions)
+        end)
 
         threads2
         |> deliver_messages
@@ -30,8 +28,7 @@ defmodule Threads do
   end
 
   defp deliver_messages(all_threads) do
-    all_threads
-    |> Enum.map(fn t ->
+    all_threads |> Enum.map(fn t ->
       messages = t |> get_messages(all_threads)
       %{t | in_buf: t.in_buf ++ messages, out_buf: []}
     end)
@@ -46,14 +43,13 @@ defmodule Threads do
   def step(%T{pos: pos} = thread, _instructions) when pos < 0, do: %{thread | state: :dead}
   def step(%T{pos: pos} = thread, instructions) when pos >= map_size(instructions), do: %{thread | state: :dead}
   def step(%T{} = thread, instructions) do
-    ins = instructions[thread.pos]
-    case ins |> exec(thread) do
+    case instructions[thread.pos] |> exec(thread) do
       {:jump, m} ->
         %{thread | pos: thread.pos + m}
-      %T{state: :blocked} = thread2 ->
-        thread2
-      %T{} = thread2 ->
-        %{thread2 | pos: thread2.pos + 1}
+      %T{state: :blocked} = t ->
+        t
+      %T{} = t ->
+        %{t | pos: t.pos + 1}
     end
   end
 
