@@ -111,7 +111,7 @@ defmodule Threads do
   defp exec({:jgz, val, _n}, %T{} = thread) when val <= 0, do: thread
 
   @pattern ~r/^([a-z]+)\s+([^\s]+)\s*(.*)?$/
-  def parse(io) do
+  def parse_instructions(io) do
     io |> IO.read(:all) |> String.trim |> String.split("\n") |> Enum.with_index |> Enum.reduce(%{}, fn {line, idx}, a ->
       [_ | matches] = @pattern |> Regex.run(line)
       cmd = matches |> Enum.at(0) |> String.to_atom
@@ -128,7 +128,4 @@ defmodule Threads do
   end
 end
 
-:stdio
-|> Threads.parse
-|> Threads.run(2)
-|> IO.inspect
+:stdio |> Threads.parse_instructions |> Threads.run(2) |> IO.puts
