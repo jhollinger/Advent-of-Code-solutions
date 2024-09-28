@@ -53,5 +53,3 @@ numerics chars = case chars of
   xs@('e' : 'i' : 'g' : 'h' : 't' : _) -> '8' : numerics (tail xs)
   xs@('n' : 'i' : 'n' : 'e' : _) -> '9' : numerics (tail xs)
   (_ : xs) -> numerics xs
-
--- where type foo = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
