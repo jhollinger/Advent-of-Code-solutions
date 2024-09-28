@@ -16,6 +16,13 @@ parseNum line =
       m = firstNumeric (reverse line)
    in read [n, m]
 
+parseNum' :: [Char] -> Int
+parseNum' line =
+  let nums = numerics line
+      n = head nums
+      m = last nums
+   in read [n, m]
+
 firstNumeric :: [Char] -> Char
 firstNumeric [] = '0'
 firstNumeric (x : xs)
@@ -23,13 +30,6 @@ firstNumeric (x : xs)
   | otherwise = firstNumeric xs
   where
     nums = ['0' .. '9']
-
-parseNum' :: [Char] -> Int
-parseNum' line =
-  let nums = numerics line
-      n = head nums
-      m = last nums
-   in read [n, m]
 
 numerics :: [Char] -> [Char]
 numerics [] = []
