@@ -3,14 +3,12 @@ module Day1 (part1, part2) where
 part1 :: String -> IO ()
 part1 input = do
   contents <- readFile input
-  let n = sum $ map parseNum (lines contents)
-  print n
+  print $ sum [parseNum line | line <- lines contents]
 
 part2 :: String -> IO ()
 part2 input = do
   contents <- readFile input
-  let n = sum $ map parseNum' (lines contents)
-  print n
+  print $ sum [parseNum' line | line <- lines contents]
 
 parseNum :: [Char] -> Int
 parseNum line =
@@ -36,22 +34,24 @@ parseNum' line =
 numerics :: [Char] -> [Char]
 numerics [] = []
 numerics chars = case chars of
-  ('1' : xs) -> '1' : numerics xs
-  ('2' : xs) -> '2' : numerics xs
-  ('3' : xs) -> '3' : numerics xs
-  ('4' : xs) -> '4' : numerics xs
-  ('5' : xs) -> '5' : numerics xs
-  ('6' : xs) -> '6' : numerics xs
-  ('7' : xs) -> '7' : numerics xs
-  ('8' : xs) -> '8' : numerics xs
-  ('9' : xs) -> '9' : numerics xs
-  ('o' : 'n' : 'e' : xs) -> '1' : numerics ('n' : 'e' : xs)
-  ('t' : 'w' : 'o' : xs) -> '2' : numerics ('w' : 'o' : xs)
-  ('t' : 'h' : 'r' : 'e' : 'e' : xs) -> '3' : numerics ('h' : 'r' : 'e' : 'e' : xs)
-  ('f' : 'o' : 'u' : 'r' : xs) -> '4' : numerics ('o' : 'u' : 'r' : xs)
-  ('f' : 'i' : 'v' : 'e' : xs) -> '5' : numerics ('i' : 'v' : 'e' : xs)
-  ('s' : 'i' : 'x' : xs) -> '6' : numerics ('i' : 'x' : xs)
-  ('s' : 'e' : 'v' : 'e' : 'n' : xs) -> '7' : numerics ('e' : 'v' : 'e' : 'n' : xs)
-  ('e' : 'i' : 'g' : 'h' : 't' : xs) -> '8' : numerics ('i' : 'g' : 'h' : 't' : xs)
-  ('n' : 'i' : 'n' : 'e' : xs) -> '9' : numerics ('i' : 'n' : 'e' : xs)
+  (x@'1' : xs) -> x : numerics xs
+  (x@'2' : xs) -> x : numerics xs
+  (x@'3' : xs) -> x : numerics xs
+  (x@'4' : xs) -> x : numerics xs
+  (x@'5' : xs) -> x : numerics xs
+  (x@'6' : xs) -> x : numerics xs
+  (x@'7' : xs) -> x : numerics xs
+  (x@'8' : xs) -> x : numerics xs
+  (x@'9' : xs) -> x : numerics xs
+  xs@('o' : 'n' : 'e' : _) -> '1' : numerics (tail xs)
+  xs@('t' : 'w' : 'o' : _) -> '2' : numerics (tail xs)
+  xs@('t' : 'h' : 'r' : 'e' : 'e' : _) -> '3' : numerics (tail xs)
+  xs@('f' : 'o' : 'u' : 'r' : _) -> '4' : numerics (tail xs)
+  xs@('f' : 'i' : 'v' : 'e' : _) -> '5' : numerics (tail xs)
+  xs@('s' : 'i' : 'x' : _) -> '6' : numerics (tail xs)
+  xs@('s' : 'e' : 'v' : 'e' : 'n' : _) -> '7' : numerics (tail xs)
+  xs@('e' : 'i' : 'g' : 'h' : 't' : _) -> '8' : numerics (tail xs)
+  xs@('n' : 'i' : 'n' : 'e' : _) -> '9' : numerics (tail xs)
   (_ : xs) -> numerics xs
+
+-- where type foo = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
