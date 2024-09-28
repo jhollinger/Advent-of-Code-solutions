@@ -11,6 +11,7 @@ main = do
 dispatch :: Maybe (Integer, Integer, String) -> IO ()
 dispatch args = case args of
   Just (1, 1, input) -> Day1.part1 input
+  Just (1, 2, input) -> Day1.part2 input
   Just _ -> putStrLn "Unknown day or part"
   Nothing -> putStrLn "Error: requires day number, part number, and input path"
 
