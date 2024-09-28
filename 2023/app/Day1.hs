@@ -32,8 +32,8 @@ firstNumeric (x : xs)
     nums = ['0' .. '9']
 
 numerics :: [Char] -> [Char]
-numerics [] = []
 numerics chars = case chars of
+  [] -> []
   (x@'1' : xs) -> x : numerics xs
   (x@'2' : xs) -> x : numerics xs
   (x@'3' : xs) -> x : numerics xs
