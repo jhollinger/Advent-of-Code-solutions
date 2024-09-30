@@ -1,6 +1,6 @@
 module Day2 (part1, part2) where
 
-import Data.List (elemIndex)
+import Helpers
 
 type Red = Int
 
@@ -40,12 +40,12 @@ parseGame line =
   let (gameMeta, gameData) = splitOn ':' line
       (_, num) = splitOn ' ' gameMeta
       num' = read num :: Int
-      draws = map parseDraw (splitAllOn ';' gameData)
+      draws = map parseDraw (splitOnAll ';' gameData)
    in Game num' draws
 
 parseDraw :: String -> Draw
 parseDraw draw =
-  let cubeData = splitAllOn ',' draw
+  let cubeData = splitOnAll ',' draw
    in foldl countColors (Draw 0 0 0) cubeData
   where
     countColors acc (' ' : cubes) = countColors acc cubes
@@ -56,17 +56,3 @@ parseDraw draw =
             "red" -> Draw (r + num') g b
             "green" -> Draw r (g + num') b
             _ -> Draw r g (b + num')
-
-splitAllOn :: Char -> String -> [String]
-splitAllOn _ "" = []
-splitAllOn char line =
-  let (segment, remainder) = splitOn char line
-   in segment : splitAllOn char remainder
-
-splitOn :: Char -> String -> (String, String)
-splitOn c line =
-  case c `elemIndex` line of
-    (Just i) ->
-      let (segment, remainder) = splitAt i line
-       in (segment, tail remainder)
-    Nothing -> (line, "")
