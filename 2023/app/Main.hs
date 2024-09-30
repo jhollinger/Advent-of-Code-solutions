@@ -1,6 +1,7 @@
 module Main where
 
 import qualified Day1
+import qualified Day2
 import System.Environment
 
 main :: IO ()
@@ -11,6 +12,8 @@ main = do
 dispatch :: Maybe (Integer, Integer, String) -> IO ()
 dispatch (Just (1, 1, input)) = Day1.part1 input
 dispatch (Just (1, 2, input)) = Day1.part2 input
+dispatch (Just (2, 1, input)) = Day2.part1 input
+dispatch (Just (2, 2, input)) = Day2.part2 input
 dispatch (Just _) = putStrLn "Unknown day or part"
 dispatch Nothing = putStrLn "Error: requires day number, part number, and input path"
 
