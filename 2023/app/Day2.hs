@@ -27,7 +27,13 @@ part1 input = do
 
 part2 :: String -> IO ()
 part2 input = do
-  putStrLn "Day 2, Part 2"
+  contents <- readFile input
+  let games = map parseGame (lines contents)
+      minimums = map minCubes games
+      total = sum $ map (\(r, g, b) -> r * g * b) minimums
+   in print total
+  where
+    minCubes (Game _ draws) = foldl (\(r, g, b) (Draw r' g' b') -> (max r r', max g g', max b b')) (0, 0, 0) draws
 
 parseGame :: String -> Game
 parseGame line =
