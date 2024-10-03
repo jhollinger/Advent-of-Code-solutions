@@ -3,6 +3,7 @@ module Main where
 import qualified Day1
 import qualified Day2
 import qualified Day3
+import qualified Day4
 import System.Environment
 
 main :: IO ()
@@ -18,6 +19,8 @@ dispatch args = case args of
   (Just (2, 2, input)) -> Day2.part2 input
   (Just (3, 1, input)) -> Day3.part1 input
   (Just (3, 2, input)) -> Day3.part2 input
+  (Just (4, 1, input)) -> Day4.part1 input
+  (Just (4, 2, input)) -> Day4.part2 input
   (Just _) -> putStrLn "Unknown day or part"
   Nothing -> putStrLn "Error: requires day number, part number, and input path"
 
