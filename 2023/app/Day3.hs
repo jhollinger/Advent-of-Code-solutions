@@ -2,39 +2,57 @@ module Day3 (part1, part2) where
 
 type Coord = (Int, Int)
 
-data Number = Number Int [Coord] deriving (Show)
+data Symbol = Symbol Char Coord deriving (Show)
+
+data Part = Part Int [Coord] deriving (Show)
+
+type Gear = (Part, Symbol, Part)
 
 part1 :: String -> IO ()
 part1 input = do
   contents <- readFile input
   let rows = lines contents
-      symbolCoords = parseSymbols rows 0
-      numberCoords = parseNumbers rows 0
-      total = sum $ map (\(Number n _) -> n) $ filter (coordsOverlap symbolCoords) numberCoords
-  print numberCoords
+      symbols = parseSymbols rows 0
+      numbers = parseNumbers rows 0
+      parts = filter (coordsOverlap symbols) numbers
+      total = sum $ map (\(Part n _) -> n) parts
   print total
 
 part2 :: String -> IO ()
 part2 input = do
   contents <- readFile input
-  print "Day 3, part 2"
-
-coordsOverlap :: [Coord] -> Number -> Bool
-coordsOverlap _ (Number _ []) = False
-coordsOverlap symCoords (Number n (coord : coords)) =
-  any (`elem` symCoords) (adjacentCoords coord)
-    || coordsOverlap symCoords (Number n coords)
+  let rows = lines contents
+      symbols = parseSymbols rows 0
+      numbers = parseNumbers rows 0
+      parts = filter (coordsOverlap symbols) numbers
+      stars = filter (\(Symbol c _) -> c == '*') symbols
+      gears = foldl (collectGears parts) [] stars
+      total = sum $ map (\(Part n _, _, Part m _) -> n * m) gears
+  print total
   where
+    collectGears :: [Part] -> [Gear] -> Symbol -> [Gear]
+    collectGears parts acc symbol =
+      case filter (coordsOverlap [symbol]) parts of
+        [p1, p2] -> (p1, symbol, p2) : acc
+        _ -> acc
+
+coordsOverlap :: [Symbol] -> Part -> Bool
+coordsOverlap _ (Part _ []) = False
+coordsOverlap symbols (Part n (coord : coords)) =
+  any (`elem` symbolCoords) (adjacentCoords coord)
+    || coordsOverlap symbols (Part n coords)
+  where
+    symbolCoords = map (\(Symbol _ c) -> c) symbols
     adjacentCoords (x, y) =
       let y' = y - 1
           y'' = y + 1
        in [(x - 1, y'), (x, y'), (x + 1, y'), (x - 1, y), (x + 1, y), (x - 1, y''), (x, y''), (x + 1, y'')]
 
-parseNumbers :: [String] -> Int -> [Number]
+parseNumbers :: [String] -> Int -> [Part]
 parseNumbers [] _ = []
 parseNumbers (row : rows) y = parseRow row 0 ++ parseNumbers rows (y + 1)
   where
-    parseRow :: String -> Int -> [Number]
+    parseRow :: String -> Int -> [Part]
     parseRow [] _ = []
     parseRow chars'@(c : chars) x
       | c `elem` numbers =
@@ -42,7 +60,7 @@ parseNumbers (row : rows) y = parseRow row 0 ++ parseNumbers rows (y + 1)
               len = length num
               x' = x + len
               coords = map (\x'' -> (x'', y)) [x .. x' - 1]
-           in Number (read num) coords : parseRow (drop len chars') x'
+           in Part (read num) coords : parseRow (drop len chars') x'
       | otherwise = parseRow chars (x + 1)
     takeNum :: String -> String
     takeNum "" = ""
@@ -51,13 +69,13 @@ parseNumbers (row : rows) y = parseRow row 0 ++ parseNumbers rows (y + 1)
       | otherwise = ""
     numbers = ['0' .. '9']
 
-parseSymbols :: [String] -> Int -> [Coord]
+parseSymbols :: [String] -> Int -> [Symbol]
 parseSymbols [] _ = []
 parseSymbols (row : rows) y = parseRow row 0 ++ parseSymbols rows (y + 1)
   where
-    parseRow :: String -> Int -> [Coord]
+    parseRow :: String -> Int -> [Symbol]
     parseRow [] _ = []
     parseRow (c : chars) x
-      | c `elem` symbols = (x, y) : parseRow chars (x + 1)
+      | c `elem` symbols = Symbol c (x, y) : parseRow chars (x + 1)
       | otherwise = parseRow chars (x + 1)
     symbols = "!@#$%^&*()-_=+/"
