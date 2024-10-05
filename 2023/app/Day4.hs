@@ -26,10 +26,10 @@ part2 input = do
   where
     copy :: [Card] -> [Card] -> [Card]
     copy [] _ = []
-    copy (card@(Card n winning mine) : cards) all =
+    copy (card@(Card n winning mine) : cards) allCards =
       let count = length $ filter (`elem` winning) mine
-          copied = after n all & take count
-       in card : copy (copied ++ cards) all
+          copied = after n allCards & take count
+       in card : copy (copied ++ cards) allCards
     after n = dropWhile (\(Card m _ _) -> m <= n)
 
 parseCard :: String -> Card
