@@ -31,7 +31,7 @@ part 2 contents = do
       case filter (coordsOverlap [symbol]) parts of
         [p1, p2] -> (p1, symbol, p2) : acc
         _ -> acc
-part n _ = error ("Unknown part " ++ show n)
+part n _ = putStrLn ("Unknown part " ++ show n)
 
 coordsOverlap :: [Symbol] -> Part -> Bool
 coordsOverlap _ (Part _ []) = False

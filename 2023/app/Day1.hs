@@ -5,7 +5,7 @@ part 1 contents = do
   print $ sum [parseNum line | line <- lines contents]
 part 2 contents = do
   print $ sum [parseNum' line | line <- lines contents]
-part n _ = error ("Unknown part " ++ show n)
+part n _ = putStrLn ("Unknown part " ++ show n)
 
 parseNum :: [Char] -> Int
 parseNum line =

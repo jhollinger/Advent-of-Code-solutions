@@ -30,7 +30,7 @@ part 2 contents = do
    in print total
   where
     minCubes (Game _ draws) = foldl (\(r, g, b) (Draw r' g' b') -> (max r r', max g g', max b b')) (0, 0, 0) draws
-part n _ = error ("Unknown part " ++ show n)
+part n _ = putStrLn ("Unknown part " ++ show n)
 
 parseGame :: String -> Game
 parseGame line =

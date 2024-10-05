@@ -27,7 +27,7 @@ part 2 contents = do
           copied = after n allCards & take count
        in card : copy (copied ++ cards) allCards
     after n = dropWhile (\(Card m _ _) -> m <= n)
-part n _ = error ("Unknown part " ++ show n)
+part n _ = putStrLn ("Unknown part " ++ show n)
 
 parseCard :: String -> Card
 parseCard line =
