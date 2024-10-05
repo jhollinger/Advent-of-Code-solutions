@@ -11,17 +11,26 @@ part1 input = do
   let cards = map parseCard (lines contents)
       points = sum $ map calcPoints cards
   print points
+  where
+    calcPoints (Card _ winning mine) =
+      case filter (`elem` winning) mine of
+        [] -> 0
+        matching -> foldl1 (\acc _ -> acc * 2) $ map (const 1) matching
 
 part2 :: String -> IO ()
 part2 input = do
   contents <- readFile input
-  print "Day 4, part 2"
-
-calcPoints :: Card -> Int
-calcPoints (Card _ winning mine) =
-  case filter (`elem` winning) mine of
-    [] -> 0
-    matching -> foldl1 (\acc _ -> acc * 2) $ map (const 1) matching
+  let cards = map parseCard (lines contents)
+      cards' = copy cards cards
+  print $ length cards'
+  where
+    copy :: [Card] -> [Card] -> [Card]
+    copy [] _ = []
+    copy (card@(Card n winning mine) : cards) all =
+      let count = length $ filter (`elem` winning) mine
+          copied = after n all & take count
+       in card : copy (copied ++ cards) all
+    after n = dropWhile (\(Card m _ _) -> m <= n)
 
 parseCard :: String -> Card
 parseCard line =
