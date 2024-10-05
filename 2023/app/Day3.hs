@@ -1,4 +1,4 @@
-module Day3 (part1, part2) where
+module Day3 (part) where
 
 type Coord = (Int, Int)
 
@@ -8,19 +8,15 @@ data Part = Part Int [Coord] deriving (Show)
 
 type Gear = (Part, Symbol, Part)
 
-part1 :: String -> IO ()
-part1 input = do
-  contents <- readFile input
+part :: Int -> String -> IO ()
+part 1 contents = do
   let rows = lines contents
       symbols = parseSymbols rows 0
       numbers = parseNumbers rows 0
       parts = filter (coordsOverlap symbols) numbers
       total = sum $ map (\(Part n _) -> n) parts
   print total
-
-part2 :: String -> IO ()
-part2 input = do
-  contents <- readFile input
+part 2 contents = do
   let rows = lines contents
       symbols = parseSymbols rows 0
       numbers = parseNumbers rows 0
@@ -35,6 +31,7 @@ part2 input = do
       case filter (coordsOverlap [symbol]) parts of
         [p1, p2] -> (p1, symbol, p2) : acc
         _ -> acc
+part n _ = error ("Unknown part " ++ show n)
 
 coordsOverlap :: [Symbol] -> Part -> Bool
 coordsOverlap _ (Part _ []) = False

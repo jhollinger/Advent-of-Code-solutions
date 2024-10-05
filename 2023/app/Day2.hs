@@ -1,4 +1,4 @@
-module Day2 (part1, part2) where
+module Day2 (part) where
 
 import Helpers
 
@@ -12,9 +12,8 @@ data Draw = Draw Red Green Blue deriving (Show)
 
 data Game = Game Int [Draw] deriving (Show)
 
-part1 :: String -> IO ()
-part1 input = do
-  contents <- readFile input
+part :: Int -> String -> IO ()
+part 1 contents = do
   let games = map parseGame (lines contents)
       games' = filter possible games
       total = sum $ map (\(Game num _) -> num) games'
@@ -24,16 +23,14 @@ part1 input = do
     numGreen = 13
     numBlue = 14
     possible (Game _ draws) = all (\(Draw r g b) -> r <= numRed && g <= numGreen && b <= numBlue) draws
-
-part2 :: String -> IO ()
-part2 input = do
-  contents <- readFile input
+part 2 contents = do
   let games = map parseGame (lines contents)
       minimums = map minCubes games
       total = sum $ map (\(r, g, b) -> r * g * b) minimums
    in print total
   where
     minCubes (Game _ draws) = foldl (\(r, g, b) (Draw r' g' b') -> (max r r', max g g', max b b')) (0, 0, 0) draws
+part n _ = error ("Unknown part " ++ show n)
 
 parseGame :: String -> Game
 parseGame line =

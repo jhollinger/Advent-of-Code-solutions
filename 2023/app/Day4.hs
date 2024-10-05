@@ -1,13 +1,12 @@
-module Day4 (part1, part2) where
+module Day4 (part) where
 
 import Data.Function ((&))
 import Helpers
 
 data Card = Card Int [Int] [Int] deriving (Show)
 
-part1 :: String -> IO ()
-part1 input = do
-  contents <- readFile input
+part :: Int -> String -> IO ()
+part 1 contents = do
   let cards = map parseCard (lines contents)
       points = sum $ map calcPoints cards
   print points
@@ -16,10 +15,7 @@ part1 input = do
       case filter (`elem` winning) mine of
         [] -> 0
         matching -> foldl1 (\acc _ -> acc * 2) $ map (const 1) matching
-
-part2 :: String -> IO ()
-part2 input = do
-  contents <- readFile input
+part 2 contents = do
   let cards = map parseCard (lines contents)
       cards' = copy cards cards
   print $ length cards'
@@ -31,6 +27,7 @@ part2 input = do
           copied = after n allCards & take count
        in card : copy (copied ++ cards) allCards
     after n = dropWhile (\(Card m _ _) -> m <= n)
+part n _ = error ("Unknown part " ++ show n)
 
 parseCard :: String -> Card
 parseCard line =

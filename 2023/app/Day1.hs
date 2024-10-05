@@ -1,14 +1,11 @@
-module Day1 (part1, part2) where
+module Day1 (part) where
 
-part1 :: String -> IO ()
-part1 input = do
-  contents <- readFile input
+part :: Int -> String -> IO ()
+part 1 contents = do
   print $ sum [parseNum line | line <- lines contents]
-
-part2 :: String -> IO ()
-part2 input = do
-  contents <- readFile input
+part 2 contents = do
   print $ sum [parseNum' line | line <- lines contents]
+part n _ = error ("Unknown part " ++ show n)
 
 parseNum :: [Char] -> Int
 parseNum line =
