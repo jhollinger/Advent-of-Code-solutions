@@ -21,7 +21,12 @@ part 1 contents = do
       minLoc = minimum $ map (location entries) seeds
   print minLoc
 part 2 contents = do
-  putStrLn "Day 5, part 2"
+  let (seeds, entries) = parse (lines contents) ([], [])
+      minLoc = minimum $ map (location entries) (expand seeds)
+  print minLoc
+  where
+    expand (start : n : seeds) = [start .. start + n - 1] ++ expand seeds
+    expand _ = []
 part n _ = putStrLn ("Unknown part " ++ show n)
 
 location :: [MapEntry] -> Int -> Int
