@@ -18,10 +18,9 @@ part 2 contents = do
 part n _ = putStrLn ("Unknown part " ++ show n)
 
 winningTimes :: Race -> [Integer]
-winningTimes r = filter (\hold -> calcDist r hold > dist r) [0 .. time r]
-
-calcDist :: Race -> Integer -> Integer
-calcDist (Race t _) hold = (t - hold) * hold
+winningTimes r = filter winning [0 .. time r]
+  where
+    winning hold = (time r - hold) * hold > dist r
 
 parse :: [String] -> [Race]
 parse [ts, ds] = zipWith (\t i -> Race t (distances !! i)) times [0 ..]
