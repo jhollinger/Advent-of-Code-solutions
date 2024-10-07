@@ -1,6 +1,7 @@
 module Helpers
   ( splitOnAll,
     splitOn,
+    dedup,
   )
 where
 
@@ -19,3 +20,14 @@ splitOn c line =
       let (segment, remainder) = splitAt i line
        in (segment, tail remainder)
     Nothing -> (line, "")
+
+dedup :: Char -> String -> String
+dedup c str = dedup' str False
+  where
+    dedup' "" _ = ""
+    dedup' (x : xs) False
+      | c == x = x : dedup' xs True
+      | otherwise = x : dedup' xs False
+    dedup' (x : xs) True
+      | c == x = dedup' xs True
+      | otherwise = x : dedup' xs False

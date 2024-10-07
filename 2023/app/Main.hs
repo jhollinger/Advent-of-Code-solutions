@@ -5,6 +5,7 @@ import qualified Day2
 import qualified Day3
 import qualified Day4
 import qualified Day5
+import qualified Day6
 import System.Environment
 
 main :: IO ()
@@ -21,6 +22,7 @@ dispatch (Just (day, n, input)) = do
     3 -> Day3.part n contents
     4 -> Day4.part n contents
     5 -> Day5.part n contents
+    6 -> Day6.part n contents
     _ -> putStrLn ("Unknown day" ++ show day)
 dispatch Nothing = putStrLn "Error: requires day number, part number, and input path"
 
