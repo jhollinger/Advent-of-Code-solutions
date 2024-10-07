@@ -1,7 +1,6 @@
 module Day5 (part) where
 
 import Data.Function ((&))
--- import qualified Data.Map as Map
 import Helpers
 
 type Seed = Int
@@ -19,10 +18,25 @@ type Almanac = ([Seed], [MapEntry])
 part :: Int -> String -> IO ()
 part 1 contents = do
   let (seeds, entries) = parse (lines contents) ([], [])
-  putStr $ unlines $ map show entries
+      minLoc = minimum $ map (location entries) seeds
+  print minLoc
 part 2 contents = do
   putStrLn "Day 5, part 2"
 part n _ = putStrLn ("Unknown part " ++ show n)
+
+location :: [MapEntry] -> Int -> Int
+location [] n = n
+location ((_, ranges) : entries) n = location entries (dest ranges n)
+
+dest :: [Range] -> Int -> Int
+dest [] n = n
+dest (r : ranges) n
+  | n >= srcMin && n <= srcMax = destMin + (n - srcMin)
+  | otherwise = dest ranges n
+  where
+    srcMin = srcStart r
+    srcMax = srcMin + len r - 1
+    destMin = destStart r
 
 parse :: [String] -> Almanac -> Almanac
 parse [] almanac = almanac
@@ -43,20 +57,10 @@ parse (l : ls) (seeds, mappings) =
   where
     append key ranges' =
       let ls' = drop (length ranges') ls
-          mappings' = (key, ranges') : mappings
+          mappings' = mappings ++ [(key, ranges')]
        in parse ls' (seeds, mappings')
     ranges [] = []
     ranges ("" : _) = []
     ranges (x : xs) =
       let nums = splitOnAll ' ' x & map read :: [Int]
        in Range {destStart = head nums, srcStart = nums !! 1, len = nums !! 2} : ranges xs
-
-foo :: Entity -> ()
-foo Seed = ()
-foo Soil = ()
-foo Fertilizer = ()
-foo Water = ()
-foo Light = ()
-foo Temperature = ()
-foo Humidity = ()
-foo Location = ()
