@@ -11,7 +11,10 @@ part 1 contents = do
       margin = product $ map length plans
   print margin
 part 2 contents = do
-  putStrLn "Day 6, part 1"
+  let race = parse' $ lines contents
+      plans = winningTimes race
+      margin = length plans
+  print margin
 part n _ = putStrLn ("Unknown part " ++ show n)
 
 winningTimes :: Race -> [Integer]
@@ -27,3 +30,9 @@ parse [ts, ds] = zipWith (\t i -> Race t (distances !! i)) times [0 ..]
     distances = nums ds
     nums line = line & dropWhile (/= ':') & tail & words & map read
 parse _ = []
+
+parse' :: [String] -> Race
+parse' [ts, ds] = Race (num ts) (num ds)
+  where
+    num line = line & dropWhile (/= ':') & tail & filter (/= ' ') & read
+parse' _ = Race 0 0
