@@ -31,13 +31,13 @@ part n _ = putStrLn ("Unknown part " ++ show n)
 
 location :: [MapEntry] -> Int -> Int
 location [] n = n
-location ((_, ranges) : entries) n = location entries (dest ranges n)
+location ((_, rs) : entries) n = location entries (dest rs n)
 
 dest :: [Range] -> Int -> Int
 dest [] n = n
-dest (r : ranges) n
+dest (r : rs) n
   | n >= srcMin && n <= srcMax = destMin + (n - srcMin)
-  | otherwise = dest ranges n
+  | otherwise = dest rs n
   where
     srcMin = srcStart r
     srcMax = srcMin + len r - 1
@@ -64,8 +64,10 @@ parse (l : ls) (seeds, mappings) =
       let ls' = drop (length ranges') ls
           mappings' = mappings ++ [(key, ranges')]
        in parse ls' (seeds, mappings')
-    ranges [] = []
-    ranges ("" : _) = []
-    ranges (x : xs) =
-      let nums = splitOnAll ' ' x & map read :: [Int]
-       in Range {destStart = head nums, srcStart = nums !! 1, len = nums !! 2} : ranges xs
+
+ranges :: [String] -> [Range]
+ranges [] = []
+ranges ("" : _) = []
+ranges (x : xs) =
+  let nums = splitOnAll ' ' x & map read :: [Int]
+   in Range {destStart = head nums, srcStart = nums !! 1, len = nums !! 2} : ranges xs
