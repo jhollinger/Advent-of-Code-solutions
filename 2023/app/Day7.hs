@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-
 module Day7 (part) where
 
 import Data.Function ((&))
