@@ -21,7 +21,9 @@ part 2 contents = do
 part n _ = putStrLn ("Unknown part " ++ show n)
 
 parse :: String -> Bid
-parse line = let (vals, bid) = splitOn ' ' line in (parseHand vals, read bid)
+parse line =
+  let (vals, bid) = splitOn ' ' line
+   in (parseHand vals, read bid)
 
 parseHand :: [Char] -> Hand
 parseHand vals =
